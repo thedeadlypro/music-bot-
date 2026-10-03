@@ -1,4 +1,3 @@
-
 import os
 import threading
 import discord
@@ -25,7 +24,7 @@ intents.message_content = True
 intents.voice_states = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
-loop_modes = {}
+loop_modes = {}  # Tracks loop mode ("none", "current", "queue") per guild
 
 @bot.event
 async def on_ready():
@@ -34,14 +33,14 @@ async def on_ready():
     # Active public Lavalink nodes
     nodes = [
         wavelink.Node(
-            identifier="Lavalink_Node1",
-            uri="http://lavalink.proxy.lol:80",
-            password="https://discord.gg/ajiekai"
+            identifier="Lava_1",
+            uri="http://lavalink.jirayu.net:80",
+            password="youshallnotpass"
         ),
         wavelink.Node(
-            identifier="Lavalink_Node2",
-            uri="http://ssl.lavalink.vcodes.xyz:443",
-            password="youwon'tguessit"
+            identifier="Lava_2",
+            uri="http://lava.link:80",
+            password="youshallnotpass"
         )
     ]
     await wavelink.Pool.connect(nodes=nodes, client=bot, cache_capacity=100)
@@ -59,12 +58,14 @@ async def on_wavelink_track_end(payload: wavelink.TrackEndEventPayload):
     guild_id = player.guild.id
     mode = loop_modes.get(guild_id, "none")
 
+    # Loop logic
     if mode == "current" and payload.track:
         await player.play(payload.track)
         return
     elif mode == "queue" and payload.track:
         await player.queue.put_wait(payload.track)
 
+    # Next track logic
     if not player.queue.is_empty:
         next_track = await player.queue.get_wait()
         await player.play(next_track)
@@ -146,6 +147,8 @@ async def loop(ctx: commands.Context, mode: str = None):
     elif mode in ["queue", "all"]:
         loop_modes[guild_id] = "queue"
         await ctx.send("Looping queue.")
+    else:
+        await ctx.send("Invalid mode. Options: `off`, `track`, `queue`")
 
 @bot.command(name="stop", aliases=["dc", "leave"])
 async def stop(ctx: commands.Context):
