@@ -30,16 +30,16 @@ loop_modes = {}  # Tracks loop mode ("none", "current", "queue") per guild
 async def on_ready():
     print(f"Logged in as {bot.user}")
     
-    # Active public Lavalink nodes
+    # Active, stable public Lavalink nodes
     nodes = [
         wavelink.Node(
-            identifier="Lava_1",
-            uri="http://lavalink.jirayu.net:80",
+            identifier="Freestuff_Node",
+            uri="https://freestuffbot.site:443",
             password="youshallnotpass"
         ),
         wavelink.Node(
-            identifier="Lava_2",
-            uri="http://lava.link:80",
+            identifier="Serenity_Node",
+            uri="http://lavalink.serenity.works:2333",
             password="youshallnotpass"
         )
     ]
